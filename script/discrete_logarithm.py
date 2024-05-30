@@ -3,6 +3,7 @@ from sympy.ntheory import factorint, primerange
 import argparse
 import math
 import time
+import matplotlib.pyplot as plt
 
 def factor_base(n):
     limit = int(3.38 * np.exp(0.5 * np.sqrt(np.log2(n) * np.log2(np.log2(n)))))
@@ -52,45 +53,6 @@ def solve_system2(A, B, n):
             solution.append(sle[non_zero_indices[0], -1])
         else:
             solution.append(0)
-
-    # if 0 in solution:
-    #     return None
-    
-    return solution
-
-def solve_system(A, B, n):
-    A = np.hstack((A, B.reshape(-1, 1))) 
-    n_mod = n - 1
-    num_rows, num_cols = A.shape
-    
-    for i in range(num_rows):
-        pivot = A[i, i]
-        pivot_row = i
-        
-        if np.gcd(pivot, n_mod) != 1:
-            for row in range(i + 1, num_rows):
-                if np.gcd(A[row, i], n_mod) == 1:
-                    A[[i, row]] = A[[row, i]]
-                    pivot = A[i, i]
-                    pivot_row = row
-                    break
-        
-        if np.gcd(pivot, n_mod) != 1:
-            raise ValueError("Matrix is singular and cannot be solved under mod {}".format(n_mod))
-        
-        pivot_inv = pow(int(pivot), -1, n_mod)
-        A[i] = (A[i] * pivot_inv) % n_mod
-        
-        for j in range(i + 1, num_rows):
-            factor = A[j, i]
-            A[j] = (A[j] - factor * A[i]) % n_mod
-    
-    solution = [0] * (num_cols - 1)
-    for i in range(num_rows - 1, -1, -1):
-        solution[i] = (A[i, -1] - sum(A[i, j] * solution[j] for j in range(i + 1, num_cols - 1))) % n_mod
-        
-    # if 0 in solution:
-    #     return None
     
     return solution
 
@@ -131,7 +93,7 @@ def linear_system(factor_base, a, n):
                 
         i += 1
         
-def evaluateLogarithm(factor_base, system_solution, a, b, n):
+def evaluate_logarithm(factor_base, system_solution, a, b, n):
     i = 0
     while True:
         number = (b * pow(a, i, n)) % n
@@ -154,16 +116,30 @@ def index_calculus(a, b, n):
     base = factor_base(n)
     solution = linear_system(base, a, n)
     print("solution: ", solution)
-    result = evaluateLogarithm(base, solution, a, b, n)
+    result = evaluate_logarithm(base, solution, a, b, n)
         
     return result
+
+def time_vs_order_plot():
+    digit_lengths = [3, 4, 5, 6, 7, 8]
+    computation_times = [0.001, 0.002, 0.004, 0.014, 0.04, 0.12]
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(digit_lengths, computation_times, marker='o', linestyle='-', color='b')
+
+    plt.title('Computation Time of Discrete Logarithm vs Order of Number')
+    plt.xlabel('Number of Digits')
+    plt.ylabel('Computation Time (seconds)')
+    plt.grid(True)
+
+    plt.show()
 
 if __name__ == "__main__":
     start_time = time.time()
 
-    a = 3842476
-    b = 6675652
-    n = 8043979  
+    a = 179
+    b = 97
+    n = 191
                         
     print("result of index calculus: ", index_calculus(a, b, n))
 
