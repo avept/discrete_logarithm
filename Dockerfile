@@ -1,9 +1,11 @@
-FROM python:3.8-slim
+FROM python:3.11-slim
 
-WORKDIR /usr/src/app
+WORKDIR /script
+COPY script/. .
 
-COPY . /usr/src/app
+RUN pip install --upgrade pip
+RUN pip install numpy
+RUN pip install sympy
+RUN pip install argparse
 
-RUN pip3 install matplotlib sympy numpy pexpect
-
-CMD ["python3", "discrete_logarithm.py"] 
+CMD ["python", "discrete_logarithm.py"]
