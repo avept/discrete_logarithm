@@ -135,11 +135,18 @@ def time_vs_order_plot():
     plt.show()
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Parse a, b, and n for the index calculus algorithm.")
+    parser.add_argument('a', type=int, help="The value of a")
+    parser.add_argument('b', type=int, help="The value of b")
+    parser.add_argument('n', type=int, help="The value of n")
+    
+    args = parser.parse_args()
+    
     start_time = time.time()
 
-    a = 179
-    b = 97
-    n = 191
+    a = args.a
+    b = args.b
+    n = args.n
                         
     print("result of index calculus: ", index_calculus(a, b, n))
 
